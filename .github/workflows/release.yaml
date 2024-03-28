@@ -2,7 +2,7 @@ name: "Publish Release from tag"
 on:
   push:
     tags:
-      - 'v*'
+      - 'x*'
 jobs:
   release:
     runs-on: ubuntu-latest
@@ -13,7 +13,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
       - name: Setup go
-        uses: actions/setup-go@v3
+        uses: actions/setup-go@v5
         with:
           go-version: '1.19'
       - name: Set up Docker Buildx
@@ -31,9 +31,9 @@ jobs:
           sed -i -e 's/^version:.*/version: '$RELEASE_VERSION'/' charts/opensearch-cluster/Chart.yaml
 
       - name: Install Helm
-        uses: azure/setup-helm@v1
+        uses: azure/setup-helm@v4
         with:
-          version: v3.8.1
+          version: v3.14.3
 
       - name: Publish helm chart
         uses: stefanprodan/helm-gh-pages@master
@@ -41,13 +41,14 @@ jobs:
           charts_dir: charts/
           token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Create Release
-        id: create_release
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          tag_name: ${{ github.ref }}
-          release_name: ${{ github.ref }}
-          draft: true
-          prerelease: false
+      # unmaintained https://github.com/actions/create-release
+      # - name: Create Release
+      #   id: create_release
+      #   uses: actions/create-release@v1
+      #   env:
+      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      #   with:
+      #     tag_name: ${{ github.ref }}
+      #     release_name: ${{ github.ref }}
+      #     draft: true
+      #     prerelease: false
