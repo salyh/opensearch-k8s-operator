@@ -13,10 +13,11 @@ jobs:
           go-version-file: 'go.work'
           cache-dependency-path: "**/*.sum"
       - name: golangci-lint go
-        uses: golangci/golangci-lint-action@v4
+        uses: golangci/go -action@v4
         with:
           # Required: the version of golangci-lint is required and must be specified without patch version: we always use the latest patch version.
           version: v1.57
           working-directory: opensearch-operator
           args: --timeout=6m --skip-dirs="(^|/)responses($|/)" -v
 
+# helm lint
