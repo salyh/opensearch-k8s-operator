@@ -1,4 +1,4 @@
-name: make tests
+name: Make install
 on: [pull_request]
 
 jobs:
@@ -28,7 +28,11 @@ jobs:
           
           make build manifests
           make install
-          make run
+
+          echo ""
+          echo "install done"
+          echo ""
+
           
           ## Prepare kubeconfig
           #k3d kubeconfig get $CLUSTER_NAME > functionaltests/kubeconfig
