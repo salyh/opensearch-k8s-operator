@@ -2,8 +2,8 @@ name: Golang Lint
 on: [pull_request]
 
 jobs:
-  golangci:
-    name: lint
+  golangci-lint:
+    name: golangci lint
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -12,14 +12,20 @@ jobs:
         with:
           go-version-file: 'go.work'
           cache: false
-      - name: golangci-lint go
+      - name: lint go
         uses: golangci/golangci-lint-action@v4
         with:
           # Required: the version of golangci-lint is required and must be specified without patch version: we always use the latest patch version.
           version: v1.57
           working-directory: opensearch-operator
           args: --timeout=6m --skip-dirs="(^|/)responses($|/)" -v
-      - name: lint helm charts
+ 
+  helm-lint:
+    name: helm lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: lint helm
         run: |
           set -e
           helm lint charts/opensearch-operator/

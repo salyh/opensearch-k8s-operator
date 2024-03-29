@@ -2,7 +2,7 @@ name: Make install
 on: [pull_request]
 
 jobs:
-  operator:
+  make-install:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -11,14 +11,14 @@ jobs:
         uses: actions/setup-go@v5
         with:
           go-version-file: 'go.work'
-          cache-dependency-path: "**/*.sum"
+          cache: false
       - uses: nolar/setup-k3d-k3s@v1
         with:
           version: v1
           k3d-name: opensearch-operator-tests
           k3d-args: --agents 2 -p 30000-30005:30000-30005@agent:0
           github-token: ${{ secrets.GITHUB_TOKEN }}
-      - name: Run tests
+      - name: make-install
         run: |
           set -e
           export CLUSTER_NAME=opensearch-operator-tests
@@ -28,12 +28,3 @@ jobs:
           
           make build manifests
           make install
-
-          echo ""
-          echo "install done"
-          echo ""
-
-          
-          ## Prepare kubeconfig
-          #k3d kubeconfig get $CLUSTER_NAME > functionaltests/kubeconfig
-          #export KUBECONFIG=$(pwd)/functionaltests/kubeconfig

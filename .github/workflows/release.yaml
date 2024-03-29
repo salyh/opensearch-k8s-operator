@@ -2,7 +2,7 @@ name: "Publish Release from tag"
 on:
   push:
     tags:
-      - 'x*'
+      - 'v*'
 jobs:
   release:
     runs-on: ubuntu-latest
