@@ -1,5 +1,8 @@
 name: "Docker Build"
-on: [pull_request]
+on:
+  pull_request:
+    branches:
+      - "main"
 jobs:
   docker-build:
     runs-on: ubuntu-latest
@@ -10,8 +13,12 @@ jobs:
       - name: Setup go
         uses: actions/setup-go@v5
         with:
+<<<<<<< HEAD
           go-version-file: 'go.work'
-          cache: false
+          cache-dependency-path: "**/*.sum"
+=======
+          go-version: '1.22.1'
+>>>>>>> main
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
       - name: Docker Build
