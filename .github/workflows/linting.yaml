@@ -12,7 +12,6 @@ jobs:
         with:
           go-version-file: 'go.work'
           cache: false
-          #cache-dependency-path: "**/*.sum"
       - name: golangci-lint go
         uses: golangci/golangci-lint-action@v4
         with:
