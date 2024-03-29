@@ -1,6 +1,6 @@
 module github.com/Opster/opensearch-k8s-operator/opensearch-operator
 
-go 1.22
+go 1.19
 
 require (
 	github.com/Masterminds/semver v1.5.0
