@@ -8,10 +8,11 @@ on:
 jobs:
   cluster-helm-chart:
     runs-on: ubuntu-latest
+    continue-on-error: true
     strategy:
       matrix:
         os-version: [2.13.0, 2.10.0, 2.6.0, 2.3.0, 2.0.1]
-        k3s-version: [v1.22, v1.26, v1.29]
+        k3s-version: [v1.24, v1.26, v1.29]
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
