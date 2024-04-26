@@ -6,13 +6,14 @@ on:
   push:
 
 jobs:
-  cluster-helm-chart:
+  m:
     runs-on: ubuntu-latest
     continue-on-error: true
     strategy:
       matrix:
-        os-version: [2.13.0, 2.10.0, 2.6.0, 2.3.0, 2.0.1]
+        os-version: [2.13.0, 2.10.0, 2.6.0, 2.3.0, 2.0.1, 1.3.16, 1.2.4]
         k3s-version: [v1.24, v1.26, v1.29]
+        op-version: [main, 2.6.0, 2.5.1, 2.4.0, 2.3.2, 2.2.1, 2.1.1, 2.0.4, 1.0.3]
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -30,6 +31,11 @@ jobs:
       - name: Run tests
         run: |
           set -e
+
+          echo "OpenSearch ${{ matrix.os-version }}"
+          echo "K3s ${{ matrix.k3s-version }}"
+          echo "Operator ${{ matrix.op-version }}"
+
           export CLUSTER_NAME=opensearch-operator-tests
           ## Check disk to avoid failed shard assignments due to watermarking
           df -h
@@ -38,14 +44,23 @@ jobs:
           k3d kubeconfig get $CLUSTER_NAME > functionaltests/kubeconfig
           export KUBECONFIG=$(pwd)/functionaltests/kubeconfig
 
-          ## Build controller docker image
-          make docker-build
+          if [ "${{ matrix.op-version }}" = "main" ]
+          then
 
-          ## Import controller docker image
-          k3d image import -c $CLUSTER_NAME controller:latest
+            ## Build controller docker image
+            make docker-build
 
-          ## Install helm chart
-          helm install opensearch-operator ../charts/opensearch-operator --set manager.image.repository=controller --set manager.image.tag=latest --set manager.image.pullPolicy=IfNotPresent --namespace default --wait
+            ## Import controller docker image
+            k3d image import -c $CLUSTER_NAME controller:latest
+
+            ## Install helm chart
+            helm install opensearch-operator ../charts/opensearch-operator --set manager.image.repository=controller --set manager.image.tag=latest --set manager.image.pullPolicy=IfNotPresent --namespace default --wait
+          else
+            helm repo add opensearch-operator https://opensearch-project.github.io/opensearch-k8s-operator/
+            helm repo update opensearch-operator
+            helm install opensearch-operator opensearch-operator/opensearch-operator --version ${{ matrix.op-version }} --namespace default --wait
+          fi
+          
           helm install opensearch-cluster ../charts/opensearch-cluster --set opensearchCluster.general.version=${{ matrix.os-version }}  --set opensearchCluster.dashboards.version=${{ matrix.os-version }} --wait
           cd functionaltests
 
